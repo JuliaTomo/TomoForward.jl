@@ -19,11 +19,7 @@
 # -----------------------------------------------------------------------
 # */
 
-function geom_2vec_parallel2d(DetectorWidth, ProjectionAngles)
-    """ Ported from ASTRA toolbox
-    https://github.com/astra-toolbox/astra-toolbox/blob/10d87f45bc9311c0408e4cacdec587eff8bc37f8/matlab/tools/astra_geom_2vec.m
-    """
-    
+function geom_2vec_parallel2d(DetectorWidth, ProjectionAngles)    
 #     ProjectionAngles = ProjectionAngles
     
     vectors = zeros(length(ProjectionAngles), 6);
@@ -43,9 +39,6 @@ function geom_2vec_parallel2d(DetectorWidth, ProjectionAngles)
 end
 
 function geom_2vec_parallel3d(DetectorSpacingX, DetectorSpacingY, ProjectionAngles)
-    """Ported form ASTRA toolbox
-    https://github.com/astra-toolbox/astra-toolbox/blob/10d87f45bc9311c0408e4cacdec587eff8bc37f8/matlab/tools/astra_geom_2vec.m
-    """    
     vectors = zeros(length(ProjectionAngles), 12);
     
     for (i, θ) in enumerate(ProjectionAngles)
@@ -74,9 +67,6 @@ function geom_2vec_parallel3d(DetectorSpacingX, DetectorSpacingY, ProjectionAngl
 end
 
 function geom_2vec_cone(DetectorSpacingX, DetectorSpacingY, ProjectionAngles, DistanceOriginSource, DistanceOriginDetector)
-    """Ported form ASTRA toolbox
-    https://github.com/astra-toolbox/astra-toolbox/blob/10d87f45bc9311c0408e4cacdec587eff8bc37f8/matlab/tools/astra_geom_2vec.m
-    """
     vectors = zeros(length(ProjectionAngles), 12);
     
     for (i, θ) in enumerate(ProjectionAngles)
