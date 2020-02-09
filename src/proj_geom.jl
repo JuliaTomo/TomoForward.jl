@@ -28,15 +28,17 @@ struct ProjGeom{T<:AbstractFloat}
     DetectorRowCount::Int
     ProjectionAngles::Array{T,1}
     Vectors::Array{T,2}
-    DistanceOriginSource::T
-    DistanceOriginDetector::T
+    DistanceOriginSource
+    DistanceOriginDetector
+
+    # parallel 2d
+    ProjGeom(spacing, detcount, angles) = ProjGeom("parallel2d", spacing, 0.0, detcount, 0, angles, geom_2vec_parallel2d(spacing, angles), nothing, nothing)
+        
+    # parallel 3d
+    ProjGeom(detspacingx, detspacingy, detrowcount, detcolcount, angles) = ProjGeom("parallel3d", detspacingx, detspacingy, detcolcount, detrowcount, angles, geom_2vec_parallel3d(detspacingx, detspacingy, angles), nothing, nothing)
+
+    # cone
+    ProjGeom(detspacingx, detspacingy, detrowcount, detcolcount, angles, source_origin, origin_det) = ProjGeom("cone", detspacingx, detspacingy, detcolcount, detrowcount, angles, geom_2vec_cone(detspacingx, detspacingy, angles, source_origin, origin_det), nothing, nothing)
 end
 
-# parallel 2d
-ProjGeom(spacing, detcount, angles) = ProjGeom("parallel2d", spacing, 0.0, detcount, 0, angles, geom_2vec_parallel2d(spacing, angles), 0, 0)
-    
-# parallel 3d
-ProjGeom(detspacingx, detspacingy, detrowcount, detcolcount, angles) = ProjGeom("parallel3d", detspacingx, detspacingy, detcolcount, detrowcount, angles, geom_2vec_parallel3d(detspacingx, detspacingy, angles), 0, 0)
-
-# cone
-ProjGeom(detspacingx, detspacingy, detrowcount, detcolcount, angles, source_origin, origin_det) = ProjGeom("cone", detspacingx, detspacingy, detcolcount, detrowcount, angles, geom_2vec_cone(detspacingx, detspacingy, angles, source_origin, origin_det), source_origin, origin_det)
+ProjGeom(spacing, detcount, angles::StepRangeLen) = ProjGeom(spacing, detcount, Array(angles))
