@@ -20,7 +20,7 @@ include("util_astra.jl")
     # cone
     ProjGeom(detspacingx, detspacingy, detrowcount, detcolcount, angles, source_origin, origin_det) = new("parallel3d", detspacingx, detspacingy, detcolcount, detrowcount, geom_2vec_cone(detspacingx, detspacingy, angles, source_origin, origin_det))
 """
-struct ProjGeom {T<:AbstractFloat}
+struct ProjGeom{T<:AbstractFloat}
     Type::String
     DetectorSpacingX::T 
     DetectorSpacingY::T
