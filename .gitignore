@@ -6,7 +6,7 @@ result
 .**/
 !.gitignore
 !.gitmodules
-!.DS_Store
+.DS_Store
 #!.trash
 
 ## C
