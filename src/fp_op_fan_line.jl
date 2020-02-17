@@ -49,19 +49,6 @@ function fp_op_fan_line(proj_geom, H, W, minX, maxX, minY, maxY)
     nangles = size(proj_geom.Vectors, 1)
     detcount = proj_geom.DetectorColCount
     
-    on_the_fly = false
-    p = 0
-    
-    img = 0
-    if img != 0
-        on_the_fly = true
-        p = zeros(nangles*detcount)
-    end
-    
-#     if get_p
-#         p = zeros(nangles, detcount)
-#     end
-    
     pixelspacingX = (maxX-minX) / W
     pixelspacingY = (maxY-minY) / H
     
@@ -77,8 +64,8 @@ function fp_op_fan_line(proj_geom, H, W, minX, maxX, minY, maxY)
     for i in 1:nangles
         vector = proj_geom.Vectors[i,:]
         
-        Dx0 = vector[1] - vector[5] * detcount / 2.
-        Dy0 = vector[2] - vector[6] * detcount / 2.
+        Dx0 = vector[3] - vector[5] * detcount / 2.
+        Dy0 = vector[4] - vector[6] * detcount / 2.
         
         # for each ray
         for j = 1:detcount
@@ -213,11 +200,7 @@ function fp_op_fan_line(proj_geom, H, W, minX, maxX, minY, maxY)
         end
     end
     
-    if on_the_fly == false
-        A = sparse(A.I, A.J, A.V, A.nrows, A.ncols)
-        dropzeros!(A)
-        return A
-    else
-        return p
-    end
+    A = sparse(A.I, A.J, A.V, A.nrows, A.ncols)
+    dropzeros!(A)
+    return A
 end

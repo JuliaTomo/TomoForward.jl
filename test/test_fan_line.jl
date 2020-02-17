@@ -1,14 +1,17 @@
 using TomoForward
 
-img = zeros(200, 200)
+img = ones(400, 400)
 img[70:101, 40:101] .= 1
 
 nangles = 200
-detcount = Int(floor(size(img,1)*1.4))
-src_origin = 800.0
+detcount = 400
+# detcount = Int(floor(size(img,1)*1.4))
+deetcount = 512
+src_origin = 1500.0
 det_origin = 500.0
+detspacing = (src_origin+det_origin) / src_origin
 angles = LinRange(0,pi,nangles+1)[1:nangles]
-proj_geom = ProjGeomFan(1.0, detcount, angles, src_origin, det_origin)
+proj_geom = ProjGeomFan(detspacing, detcount, angles, src_origin, det_origin)
 
 # test line projection model
 A = fp_op_fan_line(proj_geom, size(img, 1), size(img, 2))
