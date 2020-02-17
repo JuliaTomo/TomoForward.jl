@@ -15,7 +15,10 @@ include("util_astra.jl")
     
     "parallel 2d"
     ProjGeom(spacing, detcount, angles) = ProjGeom("parallel2d", spacing, 0.0, detcount, 0, Array{Float64}(angles), geom_2vec_parallel2d(spacing, angles), nothing, nothing)
-            
+
+    "fan"
+    ProjGeom(spacing, detcount, angles, src_origin, det_origin) = ProjGeom("fan", spacing, 0.0, detcount, 0, Array{Float64}(angles), geom_2vec_fan(spacing, angles, src_origin, det_origin), src_origin, det_origin)
+
     "parallel 3d"
     ProjGeom(detspacingx, detspacingy, detrowcount, detcolcount, angles) = ProjGeom("parallel3d", detspacingx, detspacingy, detcolcount, detrowcount, Array{Float64}(angles), geom_2vec_parallel3d(detspacingx, detspacingy, angles), nothing, nothing)
     
@@ -35,13 +38,13 @@ mutable struct ProjGeom{T<:AbstractFloat}
 end
 
 "parallel 2d"
-ProjGeom(spacing, detcount, angles) = ProjGeom("parallel2d", spacing, 0.0, detcount, 0, Array{Float64}(angles), geom_2vec_parallel2d(spacing, angles), nothing, nothing)
+ProjGeom(spacing, detcount, angles) = ProjGeom("parallel2d", spacing, 0.0, detcount, 0, Array(angles), geom_2vec_parallel2d(spacing, angles), nothing, nothing)
 
 "fan"
-ProjGeom(spacing, detcount, angles, srcorigin, detorigin) = ProjGeom("fan", spacing, 0.0, detcount, 0, Array{Float64}(angles), geom_2vec_fan(spacing, angles, srcorigin, detorigin), srcorigin, detorigin)
+ProjGeom(spacing, detcount, angles, src_origin, det_origin) = ProjGeom("fan", spacing, 0.0, detcount, 0, Array(angles), geom_2vec_fan(spacing, angles, src_origin, det_origin), src_origin, det_origin)
 
 "parallel 3d"
-ProjGeom(detspacingx, detspacingy, detrowcount, detcolcount, angles) = ProjGeom("parallel3d", detspacingx, detspacingy, detcolcount, detrowcount, Array{Float64}(angles), geom_2vec_parallel3d(detspacingx, detspacingy, angles), nothing, nothing)
+ProjGeom(detspacingx, detspacingy, detrowcount, detcolcount, angles) = ProjGeom("parallel3d", detspacingx, detspacingy, detcolcount, detrowcount, Array(angles), geom_2vec_parallel3d(detspacingx, detspacingy, angles), nothing, nothing)
 
 "cone"
-ProjGeom(detspacingx, detspacingy, detrowcount, detcolcount, angles, source_origin, origin_det) = ProjGeom("cone", detspacingx, detspacingy, detcolcount, detrowcount, Array{Float64}(angles), geom_2vec_cone(detspacingx, detspacingy, angles, source_origin, origin_det), source_origin, origin_det)
+ProjGeom(detspacingx, detspacingy, detrowcount, detcolcount, angles, source_origin, origin_det) = ProjGeom("cone", detspacingx, detspacingy, detcolcount, detrowcount, Array(angles), geom_2vec_cone(detspacingx, detspacingy, angles, source_origin, origin_det), source_origin, origin_det)
