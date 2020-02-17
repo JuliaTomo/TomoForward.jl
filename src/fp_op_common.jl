@@ -44,7 +44,7 @@ end
 function check_vol_geom(proj_geom, vol_width )
     detwidth = (proj_geom.DetectorColCount*proj_geom.DetectorSpacingX)
     if vol_width > detwidth*10
-        print("! Volume is too large compared to projection geometry. Please specify minX, maxX, minY, maxY when you call fp_op_parallel2d_strip")
+        error("! Volume is too large compared to projection geometry. Please specify minX, maxX, minY, maxY when you call fp_op_parallel2d_strip")
     end
 end
 

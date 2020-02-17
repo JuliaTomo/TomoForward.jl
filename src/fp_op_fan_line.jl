@@ -87,8 +87,8 @@ function fp_op_fan_line(proj_geom, H, W, minX, maxX, minY, maxY)
             DLx = Dx0 + (j-0.5) * vector[5]
             DLy = Dy0 + (j-0.5) * vector[6]
 
-            rx = vector[1] - Dx;
-            ry = vector[2] - Dy;
+            rx = vector[1] - DLx;
+            ry = vector[2] - DLy;
 
             vertical = abs(rx) < abs(ry)
             isin = false
