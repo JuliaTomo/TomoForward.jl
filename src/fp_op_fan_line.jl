@@ -102,7 +102,7 @@ function fp_op_fan_line(proj_geom, H, W, minX, maxX, minY, maxY)
                 T = 0.5 + 0.5 * abs(rxry)
                 invTS = len / (T - S)
 
-                c = (DLx + (Ey - Dy)*rxry - Ex) * invpixelspacingX
+                c = (DLx + (Ey - DLy)*rxry - Ex) * invpixelspacingX
 
                 # for each row
                 for row = 0:H-1
