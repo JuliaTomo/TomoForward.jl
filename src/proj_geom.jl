@@ -36,7 +36,10 @@ end
 
 "parallel 2d"
 ProjGeom(spacing, detcount, angles) = ProjGeom("parallel2d", spacing, 0.0, detcount, 0, Array{Float64}(angles), geom_2vec_parallel2d(spacing, angles), nothing, nothing)
-        
+
+"fan"
+ProjGeom(spacing, detcount, angles, srcorigin, detorigin) = ProjGeom("fan", spacing, 0.0, detcount, 0, Array{Float64}(angles), geom_2vec_fan(spacing, angles, srcorigin, detorigin), srcorigin, detorigin)
+
 "parallel 3d"
 ProjGeom(detspacingx, detspacingy, detrowcount, detcolcount, angles) = ProjGeom("parallel3d", detspacingx, detspacingy, detcolcount, detrowcount, Array{Float64}(angles), geom_2vec_parallel3d(detspacingx, detspacingy, angles), nothing, nothing)
 

@@ -66,6 +66,22 @@ function geom_2vec_parallel3d(DetectorSpacingX, DetectorSpacingY, ProjectionAngl
     return vectors
 end
 
+function geom_2vec_fan(DetectorWidth, ProjectionAngles, DistanceOriginSource, DistanceOriginDetector)
+    vectors = zeros(length(ProjectionAngles), 6)
+    
+    for (i, θ) in enumerate(ProjectionAngles)
+        vectors[i,1] =  sin(θ) * DistanceOriginSource
+        vectors[i,2] = -cos(θ) * DistanceOriginSource
+
+        vectors[i,3] = -sin(θ) * DistanceOriginDetector
+        vectors[i,4] =  cos(θ) * DistanceOriginDetector
+
+        vectors[i,5] =  cos(θ) * DetectorWidth;
+        vectors[i,6] =  sin(θ) * DetectorWidth;
+    end
+    return vectors
+end
+
 function geom_2vec_cone(DetectorSpacingX, DetectorSpacingY, ProjectionAngles, DistanceOriginSource, DistanceOriginDetector)
     vectors = zeros(length(ProjectionAngles), 12);
     

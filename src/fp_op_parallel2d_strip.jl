@@ -92,8 +92,8 @@ function fp_op_parallel2d_strip(proj_geom, H, W, minX, maxX, minY, maxY)
         for j = 1:detcount
             iray = (j-1)*nangles + i
             
-            DLx = Dx0 + (j-1.0) * vector[5]
-            DLy = Dy0 + (j-1.0) * vector[6]
+            DLx = Dx0 + (j-0.5) * vector[5]
+            DLy = Dy0 + (j-0.5) * vector[6]
             DRx = DLx + vector[5]
             DRy = DLy + vector[6]
             
@@ -123,7 +123,7 @@ function fp_op_parallel2d_strip(proj_geom, H, W, minX, maxX, minY, maxY)
                     colL = Int(floor(cL-0.5+S))
                     colR = Int(floor(cR+1.5-S))
                     colL = max(0, colL)
-                    colR = min(colR, H-1)
+                    colR = min(colR, W-1)
                     
                     tmp = colL
                     offsetL = cL - tmp
