@@ -2,7 +2,7 @@ module TomoForward
 
 # common
 include("proj_geom.jl")
-export ProjGeom
+export ProjGeom, ProjGeomFan
 
 # FP
 include("fp_op_common.jl")
