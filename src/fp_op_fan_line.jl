@@ -119,7 +119,7 @@ function fp_op_fan_line(proj_geom, H, W, minX, maxX, minY, maxY)
 
                     elseif (S < offset)
 
-                        weight = (offset - S) * invLTS
+                        weight = (offset - S) * invTS
 
                         ivol = (col) * H + (row+1)
                         if col >= 0 && col < W
@@ -177,7 +177,7 @@ function fp_op_fan_line(proj_geom, H, W, minX, maxX, minY, maxY)
 
                     elseif S < offset
 
-                        weight = (offset - S) * invLTS
+                        weight = (offset - S) * invTS
 
                         ivol = (col) * H + row + 1
                         if row >= 0 && row < H
