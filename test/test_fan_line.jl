@@ -1,10 +1,11 @@
 using TomoForward
 
-img = ones(400, 400)
+N = 128
+img = zeros(N, N)
 img[70:101, 40:101] .= 1
 
 nangles = 200
-detcount = 400
+detcount = N
 # detcount = Int(floor(size(img,1)*1.4))
 deetcount = 512
 src_origin = 1500.0
