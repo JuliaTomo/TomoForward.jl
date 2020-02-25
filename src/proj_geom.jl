@@ -10,8 +10,6 @@ include("util_astra.jl")
         DetectorRowCount::Int
         ProjectionAngles::Array{T,1}
         Vectors::Array{T,2}
-        DistanceOriginSource
-        DistanceOriginDetector
     
     "parallel 2d"
     ProjGeom(spacing, detcount, angles) = ProjGeom("parallel2d", spacing, 0.0, detcount, 0, Array{Float64}(angles), geom_2vec_parallel2d(spacing, angles), nothing, nothing)
@@ -38,11 +36,15 @@ end
 "parallel 2d"
 ProjGeom(spacing, detcount, angles) = ProjGeom("parallel2d", spacing, 0.0, detcount, 0, Array{Float64}(angles), geom_2vec_parallel2d(spacing, angles))
 
+ProjGeom(spacing, detcount, vectors) = ProjGeom("parallel2d", spacing, 0.0, detcount, 0, Float64[], vectors)
+
 # "parallel 3d"
 # ProjGeom(detspacingx, detspacingy, detrowcount, detcolcount, angles) = ProjGeom("parallel3d", detspacingx, detspacingy, detcolcount, detrowcount, Array(angles), geom_2vec_parallel3d(detspacingx, detspacingy, angles))
 
 "fan"
 ProjGeomFan(spacing, detcount, angles, src_origin, det_origin) = ProjGeom("fan", spacing, 0.0, detcount, 0, Array{Float64}(angles), geom_2vec_fan(spacing, angles, src_origin, det_origin))
+
+ProjGeomFan(spacing, detcount, vectors) = ProjGeom("fan", spacing, 0.0, detcount, 0, Float64[], vectors)
 
 # "cone"
 # ProjGeom(detspacingx, detspacingy, detrowcount, detcolcount, angles, source_origin, origin_det) = ProjGeom("cone", detspacingx, detspacingy, detcolcount, detrowcount, Array(angles), geom_2vec_cone(detspacingx, detspacingy, angles, source_origin, origin_det))
