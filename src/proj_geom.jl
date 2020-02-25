@@ -36,10 +36,10 @@ mutable struct ProjGeom{T<:AbstractFloat}
 end
 
 "parallel 2d"
-ProjGeom(spacing, detcount, angles) = ProjGeom("parallel2d", spacing, 0.0, detcount, 0, Array(angles), geom_2vec_parallel2d(spacing, angles), nothing, nothing)
+ProjGeom(spacing, detcount, angles) = ProjGeom("parallel2d", spacing, 0.0, detcount, 0, Array(angles), geom_2vec_parallel2d(spacing, angles))
 
 "parallel 3d"
-ProjGeom(detspacingx, detspacingy, detrowcount, detcolcount, angles) = ProjGeom("parallel3d", detspacingx, detspacingy, detcolcount, detrowcount, Array(angles), geom_2vec_parallel3d(detspacingx, detspacingy, angles), nothing, nothing)
+ProjGeom(detspacingx, detspacingy, detrowcount, detcolcount, angles) = ProjGeom("parallel3d", detspacingx, detspacingy, detcolcount, detrowcount, Array(angles), geom_2vec_parallel3d(detspacingx, detspacingy, angles))
 
 "fan"
 ProjGeomFan(spacing, detcount, angles, src_origin, det_origin) = ProjGeom("fan", spacing, 0.0, detcount, 0, Array(angles), geom_2vec_fan(spacing, angles, src_origin, det_origin))

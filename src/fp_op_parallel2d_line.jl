@@ -182,12 +182,12 @@ function fp_op_parallel2d_line(proj_geom, H, W, minX, maxX, minY, maxY)
                         
                         ivol = col * H + (row-1) + 1   
                         if row > 0
-                                add_weight(A, iray, ivol, len-weight)
+                            add_weight(A, iray, ivol, len-weight)
                         end
 
                         ivol = col * H + (row) + 1   
                         if (row >= 0 && row < H)
-                                add_weight(A, iray, ivol, weight)
+                            add_weight(A, iray, ivol, weight)
                         end
 
                     elseif (S < offset)
@@ -195,19 +195,19 @@ function fp_op_parallel2d_line(proj_geom, H, W, minX, maxX, minY, maxY)
 
                         ivol = col * H + (row+1)
                         if row >= 0 && row < H
-                                add_weight(A, iray, ivol, len-weight)
+                            add_weight(A, iray, ivol, len-weight)
                         end
 
                         # zero-based: col, row+1
                         ivol = col * H + (row+1) + 1
                         
                         if row+1 < H
-                                add_weight(A, iray, ivol, weight)
+                            add_weight(A, iray, ivol, weight)
                         end
 
                     elseif row >= 0 && row < H
                         ivol = col * H + (row+1)
-                            add_weight(A, iray, ivol, len)
+                        add_weight(A, iray, ivol, len)
                     end
 
                     isin = true
