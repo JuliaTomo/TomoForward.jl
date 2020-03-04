@@ -14,7 +14,7 @@ Install [Julia](https://julialang.org/downloads/) and in [Julia REPL](https://do
 
 ## Examples
 
-Please see codes in test folder.
+Please see codes in `examples` folder.
 
 
 # Features
