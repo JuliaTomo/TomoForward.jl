@@ -19,10 +19,10 @@
 # -----------------------------------------------------------------------
 # */
 
-function geom_2vec_parallel2d(DetectorWidth, ProjectionAngles)    
+function geom_2vec_parallel2d(DetectorWidth, ProjectionAngles) where {T<:AbstractFloat}
 #     ProjectionAngles = ProjectionAngles
     
-    vectors = zeros(length(ProjectionAngles), 6);
+    vectors = zeros(T, length(ProjectionAngles), 6);
     
     for (i, θ) in enumerate(ProjectionAngles)
         vectors[i,1] = sin(θ);
@@ -38,8 +38,8 @@ function geom_2vec_parallel2d(DetectorWidth, ProjectionAngles)
     return vectors
 end
 
-function geom_2vec_parallel3d(DetectorSpacingX, DetectorSpacingY, ProjectionAngles)
-    vectors = zeros(length(ProjectionAngles), 12);
+function geom_2vec_parallel3d(DetectorSpacingX::T, DetectorSpacingY::T, ProjectionAngles) where {T<:AbstractFloat}
+    vectors = zeros(T, length(ProjectionAngles), 12);
     
     for (i, θ) in enumerate(ProjectionAngles)
         # ray direction
@@ -66,8 +66,8 @@ function geom_2vec_parallel3d(DetectorSpacingX, DetectorSpacingY, ProjectionAngl
     return vectors
 end
 
-function geom_2vec_fan(DetectorWidth, ProjectionAngles, DistanceOriginSource, DistanceOriginDetector)
-    vectors = zeros(length(ProjectionAngles), 6)
+function geom_2vec_fan(DetectorWidth, ProjectionAngles, DistanceOriginSource, DistanceOriginDetector) where {T<:AbstractFloat}
+    vectors = zeros(T, length(ProjectionAngles), 6)
     
     for (i, θ) in enumerate(ProjectionAngles)
         vectors[i,1] =  sin(θ) * DistanceOriginSource
@@ -82,8 +82,8 @@ function geom_2vec_fan(DetectorWidth, ProjectionAngles, DistanceOriginSource, Di
     return vectors
 end
 
-function geom_2vec_cone(DetectorSpacingX, DetectorSpacingY, ProjectionAngles, DistanceOriginSource, DistanceOriginDetector)
-    vectors = zeros(length(ProjectionAngles), 12);
+function geom_2vec_cone(DetectorSpacingX, DetectorSpacingY, ProjectionAngles, DistanceOriginSource, DistanceOriginDetector) where {T<:AbstractFloat}
+    vectors = zeros(T, length(ProjectionAngles), 12);
     
     for (i, θ) in enumerate(ProjectionAngles)
         # ray direction
