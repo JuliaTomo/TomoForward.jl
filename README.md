@@ -1,4 +1,4 @@
-Welcome to TomoForward.jl
+# Welcome to TomoForward.jl !
 
 TomoForward provides tomographic forward projection operator to generate sinogram data from 2D images. (3D will be supported soon) Many codes are ported from ASTRA-Toolbox [1].
 
