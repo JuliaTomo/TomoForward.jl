@@ -25,12 +25,6 @@ Please see codes in `examples` folder.
 
 - 2D paralleal beam with line and strip projection model. Ported from [1]
 
-
-# Todos
-
-- 3D geometry
-- Supporting GPU
-
 # Reference
 
 - [1] https://astra-toolbox.com
