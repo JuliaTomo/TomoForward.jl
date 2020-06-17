@@ -19,7 +19,7 @@
 # -----------------------------------------------------------------------
 # */
 
-function geom_2vec_parallel2d(DetectorWidth, ProjectionAngles) where {T<:AbstractFloat}
+function geom_2vec_parallel2d(DetectorWidth::T, ProjectionAngles) where {T<:AbstractFloat}
 #     ProjectionAngles = ProjectionAngles
     
     vectors = zeros(T, length(ProjectionAngles), 6);
