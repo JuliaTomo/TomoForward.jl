@@ -66,8 +66,8 @@ function geom_2vec_parallel3d(DetectorSpacingX::T, DetectorSpacingY::T, Projecti
     return vectors
 end
 
-function geom_2vec_fan(DetectorWidth, ProjectionAngles, DistanceOriginSource, DistanceOriginDetector) where {T<:AbstractFloat}
-    vectors = zeros(T, length(ProjectionAngles), 6)
+function geom_2vec_fan(DetectorWidth, ProjectionAngles, DistanceOriginSource, DistanceOriginDetector)
+    vectors = zeros(length(ProjectionAngles), 6)
     
     for (i, θ) in enumerate(ProjectionAngles)
         vectors[i,1] =  sin(θ) * DistanceOriginSource
