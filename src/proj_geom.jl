@@ -34,7 +34,7 @@ mutable struct ProjGeom{T<:AbstractFloat}
 end
 
 "parallel 2d"
-ProjGeom(spacing, detcount, angles) = ProjGeom("parallel2d", spacing, 0.0, detcount, 0, Array{Float64}(angles), geom_2vec_parallel2d(spacing, angles))
+ProjGeom(spacing, detcount, angles) = ProjGeom("parallel2d", spacing, 0.0, detcount, 0, Array(angles), geom_2vec_parallel2d(spacing, angles))
 
 ProjGeom(detcount, vectors) = ProjGeom("parallel2d", -1.0, 0.0, detcount, 0, Float64[], vectors)
 
@@ -42,7 +42,7 @@ ProjGeom(detcount, vectors) = ProjGeom("parallel2d", -1.0, 0.0, detcount, 0, Flo
 ProjGeom(detspacingx, detspacingy, detrowcount, detcolcount, angles) = ProjGeom("parallel3d", detspacingx, detspacingy, detcolcount, detrowcount, Array(angles), geom_2vec_parallel3d(detspacingx, detspacingy, angles))
 
 "fan"
-ProjGeomFan(spacing, detcount, angles, src_origin, det_origin) = ProjGeom("fan", spacing, 0.0, detcount, 0, Array{Float64}(angles), geom_2vec_fan(spacing, angles, src_origin, det_origin))
+ProjGeomFan(spacing, detcount, angles, src_origin, det_origin) = ProjGeom("fan", spacing, 0.0, detcount, 0, Array(angles), geom_2vec_fan(spacing, angles, src_origin, det_origin))
 
 ProjGeomFan(detcount, vectors) = ProjGeom("fan", -1.0, 0.0, detcount, 0, Float64[], vectors)
 
