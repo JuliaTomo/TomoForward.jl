@@ -1,19 +1,17 @@
-#using TomoForward
 include("../src/proj_geom.jl")
 include("../src/fp_op_common.jl")
-using .proj_geom
-using CUDAdrv, CUDAnative, CuArrays
 
-include("../src/fp_parallel3d_strip.jl")
+using CUDA
 
 nslice = 128
 img = ones(Float32, 128, 128, nslice)
 #img[70:101, 40:101, 40:55] .= 1
 
 nangles = 10
-proj_geom_ = proj_geom.ProjGeom(1.0, 1.0, nslice, 128, LinRange(0,pi,nangles+1)[1:nangles])
+proj_geom_ = ProjGeom(1.0, 1.0, nslice, 128, LinRange(0,pi,nangles+1)[1:nangles])
 
-p = zeros(Float32, nangles, proj_geom_.DetectorRowCount, proj_geom_.DetectorColCount)
+p = zeros(Float32, proj_geom_.DetectorRowCount, proj_geom_.DetectorColCount, nangles)
+
 img_cuda = CuArray(img)
 p_cuda = CuArray(p)
 

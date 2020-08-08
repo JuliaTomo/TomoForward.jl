@@ -12,6 +12,11 @@ function fp_op_parallel2d_line(proj_geom, H, W)
     fp_op_parallel2d_line(proj_geom, H, W, minX, maxX, minY, maxY)
 end
 
+function fp_op_parallel2d_line(proj_geom, vol_geom)
+    fp_op_parallel2d_line(proj_geom, vol_geom.ny, vol_geom.nx, vol_geom.minX, vol_geom.maxX, vol_geom.minY, vol_geom.maxY)
+end
+
+
 # The following code was ported to Julia from
 # https://github.com/astra-toolbox/astra-toolbox/blob/master/include/astra/ParallelBeamLinearKernelProjector2D.inl
 # /*

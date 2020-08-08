@@ -4,6 +4,9 @@ module TomoForward
 include("proj_geom.jl")
 export ProjGeom, ProjGeomFan
 
+include("vol_geom.jl")
+export VolGeom
+
 # FP
 include("fp_op_common.jl")
 include("fp_op_parallel2d_line.jl")
