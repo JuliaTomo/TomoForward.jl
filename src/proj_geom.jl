@@ -23,14 +23,14 @@ include("util_astra.jl")
     "cone"
     ProjGeom(detspacingx, detspacingy, detrowcount, detcolcount, angles, source_origin, origin_det) = ProjGeom("cone", detspacingx, detspacingy, detcolcount, detrowcount, Array{Float64}(angles), geom_2vec_cone(detspacingx, detspacingy, angles, source_origin, origin_det), source_origin, origin_det)
 """
-mutable struct ProjGeom{T<:AbstractFloat}
+mutable struct ProjGeom
     Type::String
-    DetectorSpacingX::T 
-    DetectorSpacingY::T
+    DetectorSpacingX
+    DetectorSpacingY
     DetectorColCount::Int
     DetectorRowCount::Int
-    ProjectionAngles::Array{T,1}
-    Vectors::Array{T,2}
+    ProjectionAngles
+    Vectors
 end
 
 "parallel 2d"
