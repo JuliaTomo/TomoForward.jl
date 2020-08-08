@@ -52,7 +52,7 @@ function VolGeom(proj_geom)
         # 2D
         vol_geom = VolGeom(n, n, -half_x_width, half_x_width, -half_x_width, half_x_width)
     else
-        half_y_width = proj_geom.DetectorRowCount * proj_geom.DetectorSpacingY
+        half_y_width = 0.5f0 * proj_geom.DetectorRowCount * proj_geom.DetectorSpacingY
         vol_geom = VolGeom(n, n, n, -half_x_width, half_x_width, -half_x_width, half_x_width, -half_y_width, half_y_width)
     end
     return vol_geom
