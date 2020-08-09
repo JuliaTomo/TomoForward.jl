@@ -9,10 +9,10 @@ img = ones(Float32, 128, 128, nslice)
 #img[70:101, 40:101, 40:55] .= 1
 
 nangles = 10
-proj_geom_ = ProjGeom(1.0, 1.0, nslice, 128, LinRange(0,pi,nangles+1)[1:nangles])
-vol_geom = VolGeom(proj_geom_)
+proj_geom = ProjGeom(1.0, 1.0, nslice, 128, LinRange(0,pi,nangles+1)[1:nangles])
+vol_geom = VolGeom(proj_geom)
 
-p = zeros(Float32, proj_geom_.DetectorRowCount, proj_geom_.DetectorColCount, nangles)
+p = zeros(Float32, proj_geom.DetectorRowCount, proj_geom_.DetectorColCount, nangles)
 
 
 img_cuda = CuArray(img)
