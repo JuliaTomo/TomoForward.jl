@@ -27,12 +27,13 @@ const g_detBlockU = 32
 const g_detBlockV = 32
 
 
-function fp_parallel3d_kernel(fun1)
+function fp_parallel3d_kernel!(p, vector, start_slice, start_angle, end_angle,
+            nslices, ndim1, ndim2, c0, c1, c2, fx, fy, fz)
     # index = (blockIdx().x - 1) * blockDim().x + threadIdx().x - 1 # begins from 0
     # blockIdx().y
 
-    a = 1
-    b = fun1(a)
+    b = c0(1,2,3)
+    end_slice = nslices
 
     @cuprintln(b)
     # jl_idx = index + 1
@@ -41,10 +42,30 @@ function fp_parallel3d_kernel(fun1)
     # widx = Int(index % W)
     # bidx = Int((index - widx) / W)
 
+    detX = vector[1] + vector[7] + vector[10]
+    detY = vector[2] + vector[8] + vector[11]
+    detZ = vector[3] + vector[9] + vector[12]
+
+    a1 = c1(vector[4], vector[5], vector[6]) / c0(vector[4], vector[5], vector[6])
+    a2 = c2(vector[4], vector[5], vector[6]) / c0(vector[4], vector[5], vector[6])
+    b1 = c1(vector[4], vector[5], vector[6]) - a1 * c0(vector[4], vector[5], vector[6])
+    b2 = c2(vector[4], vector[5], vector[6]) - a2 * c0(vector[4], vector[5], vector[6])
+
+    # corr dist
+
+    fval = 0.f0
+
+    for detectorV=st:stend 
+
+
+        # marching along dirx or diry dirz
+
+    end
+
     return
 end
 
-function fp_parallel3d(p, img, proj_geom, vol_geom)
+function fp_parallel3d!(p, img, proj_geom, vol_geom)
     """
     for each angle,
         compute the direction
@@ -56,6 +77,12 @@ function fp_parallel3d(p, img, proj_geom, vol_geom)
     
     block_start = 1
     block_end = 1
+
+
+
+    nx, ny, nz = vol_geom.nx, vol_geom.ny, vol_geom.nz
+
+    f1 = (x,y,z) -> x; f2 = (x,y,z) -> y; f3 = (x,y,z) -> z
 
     for iangle=1:nangles+1
         theta = proj_geom.ProjectionAngles[iangle]
@@ -77,16 +104,21 @@ function fp_parallel3d(p, img, proj_geom, vol_geom)
                 dim_threads = (1, 1)
 
                 if block_dir == 0
-                    for i=1:g_blockSlices:vol_geom.nx
-                        @cuda threads=dim_threads blocks=dim_block fp_parallel3d_kernel(p, i, block_start, block_end, )
+                    for i=1:g_blockSlices:nx                       
+                        @cuda threads=dim_threads blocks=dim_block fp_parallel3d_kernel(p, vecs[iangle,:], i, block_start, block_end, nx, ny, nz, f1, f2, f3, f1, f2, f3)
                     end
                 elseif block_dir == 1
-                    for i=1:g_blockSlices:vol_geom.ny
-                        @cuda threads=dim_threads blocks=dim_block fp_parallel3d_kernel()
+                    c0 = (x,y,z) -> y; c1 = (x,y,z) -> x; c2 = (x,y,z) -> z
+                    fx = c0; fy = c1; fz = c2;
+                    for i=1:g_blockSlices:ny
+                        
+                        @cuda threads=dim_threads blocks=dim_block fp_parallel3d_kernel(p, vecs[iangle,:], i, block_start, block_end, ny, nx, nz, f2, f1, f3, f2, f1, f3)
                     end
                 elseif block_dir == 2
-                    for i=1:g_blockSlices:vol_geom.nz
-                        @cuda threads=dim_threads blocks=dim_block fp_parallel3d_kernel()
+                    c0 = (x,y,z) -> z; c1 = (x,y,z) -> x; c2 = (x,y,z) -> y
+                    fx = (x,y,z) -> ; fy = c1; fz = c2;
+                    for i=1:g_blockSlices:nz
+                        @cuda threads=dim_threads blocks=dim_block fp_parallel3d_kernel(p, vecs[iangle,:], i, block_start, block_end, nz, nx, ny, f3, f1, f2, f2, f3, f1)
                     end
                 end
             end            
@@ -97,16 +129,23 @@ function fp_parallel3d(p, img, proj_geom, vol_geom)
     end
 end
 
+nangles = 11
 nthreads = 128
-totalthread = nangles * vol_geom.ny # * vol_geom.nx
+totalthread = nangles * 34 # * vol_geom.nx
 nblocks = Int(floor(totalthread / nthreads + 1)) + 1;
 
-fun1(x) = x + 2
-@cuda threads=(1,1) blocks=(2,2) fp_parallel3d_kernel(fun1)
+fun3 = (x,y,z) -> x
+# fun1(x) = x[1]
+
+function test(A)
+    return 
+end
+
+@cuda threads=(1,1) blocks=(2,2) test(proj_geom)
 
 #------- test textures
-# arr = cu(zeros(3,4,5))
-# texture = CuTexture(arr)
+arr = cu(zeros(3,4,5))
+texture = CuTextureArray(arr)
 
 # texarr3D = CUDA.CuTextureArray{Float32}(2,3,4)
 # tex3D = CuTexture(texarr3D)
