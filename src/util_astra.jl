@@ -39,7 +39,7 @@ function geom_2vec_parallel2d(DetectorWidth::T, ProjectionAngles) where {T<:Abst
 end
 
 function geom_2vec_parallel3d(DetectorSpacingX::T, DetectorSpacingY::T, ProjectionAngles) where {T<:AbstractFloat}
-    vectors = zeros(T, length(ProjectionAngles), 12);
+    vectors = zeros(Float32, length(ProjectionAngles), 12);
     
     for (i, θ) in enumerate(ProjectionAngles)
         # ray direction
@@ -82,8 +82,8 @@ function geom_2vec_fan(DetectorWidth, ProjectionAngles, DistanceOriginSource, Di
     return vectors
 end
 
-function geom_2vec_cone(DetectorSpacingX, DetectorSpacingY, ProjectionAngles, DistanceOriginSource, DistanceOriginDetector) where {T<:AbstractFloat}
-    vectors = zeros(T, length(ProjectionAngles), 12);
+function geom_2vec_cone(DetectorSpacingX, DetectorSpacingY, ProjectionAngles, DistanceOriginSource, DistanceOriginDetector)
+    vectors = zeros(Float32, length(ProjectionAngles), 12);
     
     for (i, θ) in enumerate(ProjectionAngles)
         # ray direction

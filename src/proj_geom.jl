@@ -51,3 +51,31 @@ ProjGeom(detspacingx, detspacingy, detrowcount, detcolcount, angles, source_orig
 
 # for initialization with vectors
 ProjGeom(type::String) = ProjGeom(type, nothing, nothing, 0, 0, nothing, nothing)
+
+function translate(pg::ProjGeom, dx, dy, dz)
+    if pg.Type == "parallel3d"
+
+    end
+end
+
+function scale(pg::ProjGeom, fx, fy, fz)
+end
+
+mutable struct ProjGeomScaled
+    proj_geom::ProjGeom
+    VectorsScaled
+end
+
+function ProjGeomScaled(pg::ProjGeom, vg::VolGeom)
+    if proj_geom.Type == "parallel3d"
+        VectorsScaled = similar(pg.Vectors)
+        dx = -(vg.minX + vg.maxX) / 2.f0
+        dy = -(vg.minY + vg.maxY) / 2.f0
+        dz = -(vg.minZ + vg.maxZ) / 2.f0
+
+        
+
+    elseif proj_geom.Type == "cone"
+
+    end
+end
