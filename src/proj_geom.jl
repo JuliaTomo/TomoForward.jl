@@ -66,14 +66,12 @@ mutable struct ProjGeomScaled
     VectorsScaled
 end
 
-function ProjGeomScaled(pg::ProjGeom, vg::VolGeom)
+function ProjGeomScaled(pg::ProjGeom, vg)
     if proj_geom.Type == "parallel3d"
         VectorsScaled = similar(pg.Vectors)
         dx = -(vg.minX + vg.maxX) / 2.f0
         dy = -(vg.minY + vg.maxY) / 2.f0
         dz = -(vg.minZ + vg.maxZ) / 2.f0
-
-        
 
     elseif proj_geom.Type == "cone"
 

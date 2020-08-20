@@ -27,19 +27,31 @@ along with the ASTRA Toolbox. If not, see <http://www.gnu.org/licenses/>.
 using CUDA
 
 function fp_parallel3d_kernel!(p, img, vector, iangle,
-            nx, ny, nz, c0, c1, c2, detSX, detSY, detSZ, dir, scale)
+            nx, ny, nz, c0, c1, c2, detSX, detSY, detSZ, dir, scale1, scale2, out_scale)
 
     # project for one angle
     tid = threadIdx().x + (blockIdx.().x - 1) * blockDim().x
     I = CartesianIndices(p)
     
+    
+    # if tid == 1
+    #     @cuprintln("$(img[0.00f0,0.0f0,0.0f0])")
+    #     @cuprintln("$(img[-10.00f0,0.0f0,0.0f0])")
+    #     @cuprintln("$(img[2.00f0,1.0f0,1.0f0])")
+    #     @cuprintln("$(img[1.50f0,1.0f0,1.0f0])")
+    # else
+    #     return
+    # end
+
+
     # for each detector pixel
     @inbounds if tid <= length(I)
         detV, detU = Tuple(I[tid])
+
         
-        detX = detSX + detU*vector[7] + detV*vector[10]
-        detY = detSY + detU*vector[8] + detV*vector[11]
-        detZ = detSZ + detU*vector[9] + detV*vector[12]
+        detX = detSX + (detU-1)*vector[7] + (detV-1)*vector[10]
+        detY = detSY + (detU-1)*vector[8] + (detV-1)*vector[11]
+        detZ = detSZ + (detU-1)*vector[9] + (detV-1)*vector[12]
 
         a1 = c1(vector[1], vector[2], vector[3]) / c0(vector[1], vector[2], vector[3])
         a2 = c2(vector[1], vector[2], vector[3]) / c0(vector[1], vector[2], vector[3])
@@ -47,8 +59,7 @@ function fp_parallel3d_kernel!(p, img, vector, iangle,
         b2 = c2(detX, detY, detZ) - a2 * c0(detX, detY, detZ)
 
         # corr dist
-        corr_dist = sqrt(a1*a1 + a2*a2 + 1.f0) * scale
-        value = 0.f0
+        corr_dist = sqrt(a1*a1*scale1 + a2*a2*scale2 + 1.f0) * out_scale
 
         """
         x =  1 x +  0
@@ -64,25 +75,42 @@ function fp_parallel3d_kernel!(p, img, vector, iangle,
         f2 += 0.5f0*nz - 0.5f0 + 0.5f0
 
         f0 += 1.f0; f1 += 1.f0; f2 += 1.f0; # Julia indexing
+        # f0 -= 0.5f0; f1 -= 0.5f0; f2 -= 0.5f0; 
 
         # @cuprintln("$f0 $f1 $a1 $f2 $a2 $(img[f0,f1,f2])")
 
+        value = 0.f0
+        bdy = 1.f0
         for i=1:nx
             # marching along dirx or diry dirz
             if dir == 0
-                value += img[f0, f1, f2]
+                if f0 >= bdy && f1 >= bdy && f0 <= nx+bdy && f1 <= ny+bdy
+                    value += img[f0, f1, f2]
+                end
+                # value += img[f1, f0, f2]
             elseif dir == 1
-                value += img[f1, f0, f2]
+                if f0 >= bdy && f1 >= bdy && f1 <= nx+bdy && f0 <= ny+bdy
+                    value += img[f1, f0, f2]
+                end
+                # value += img[f0, f1, f2]
             else
-                value += img[f1, f2, f0]
+                # in parallel beam, typically dir \neq 2
+                # TODO
+                # value += img[f1, f2, f0]
             end
             f0 += 1.0f0;
 			f1 += a1;
-			f2 += a2;
+            f2 += a2;
+            
+            # debugging
+            if img[f0,f1,f2] > 0.f0
+                # @cuprintln(img[127.f0, 128.f0, 127.f0], " ", img[127.9f0, 128.f0, 127.f0], " ", img[0.4f0, 0.5f0, 0.5f0], " ", img[-1.5f0, -1.5f0, -1.5f0])
+                # @cuprintln("$f0, $f1, $f2, $(img[f0,f1,f2])")
+            end
         end
 
         value *= corr_dist
-        p[tid] = value
+        p[detV, detU] = value
     end
     return
 end
@@ -101,57 +129,85 @@ function fp_parallel3d!(p, img, proj_geom, vol_geom)
 
     if abs(vol_geom.minX + vol_geom.maxX) > 1e-8
         error("not implemented yet for non-cube volume")
+    elseif size(img, 1) != vol_geom.ny || size(img, 2) != vol_geom.nx || size(img, 3) != vol_geom.nz
+        # error("mismatch between img size and volume geometry")
     end
 
-    nthreads = 128
+    nthreads = 512
     nblocks = cld(size(p,1)*size(p,2), nthreads)
 
     nangles = length(proj_geom.ProjectionAngles)
-    vecs = cu(proj_geom.Vectors)
+    vecs = proj_geom.Vectors
     
     nx, ny, nz = vol_geom.nx, vol_geom.ny, vol_geom.nz
+    # out_scale = 1.f0
 
     texturearray = CuTextureArray(img)
     # Create a texture object and bind it to the texture memory created above
-    img_texture = CuTexture(texturearray)
+    img_texture = CuTexture(texturearray; filter_mode=CUDA.CU_TR_FILTER_MODE_LINEAR)
     nrow = proj_geom.DetectorRowCount
     ncol = proj_geom.DetectorColCount
 
     for iangle=1:nangles
+        out_scale = vol_geom.spacingX
+
         vector = vecs[iangle,:]
+        # translation https://github.com/astra-toolbox/astra-toolbox/blob/10d87f45bc9311c0408e4cacdec587eff8bc37f8/include/astra/GeometryUtil3D.h
+        
+        # scaling
         vector[[1,7,10]] ./= vol_geom.spacingX
         vector[[2,8,11]] ./= vol_geom.spacingY
         vector[[3,9,12]] ./= vol_geom.spacingZ
-        scale = vol_geom.spacingX
-
-        detSX = vector[4] - 0.5f0*vector[7]*ncol - 0.5f0*vector[10]*nrow
+        
+        detSX = vector[4] -0.5f0*vector[7]*ncol -0.5f0*vector[10]*nrow
         detSY = vector[5] -0.5f0*vector[8]*ncol -0.5f0*vector[11]*nrow
-        detSZ = vector[6] -0.5f0*vector[9]*ncol -0.5f0*nrow*vector[12]
+        detSZ = vector[6] -0.5f0*vector[9]*ncol -0.5f0*vector[12]*nrow
 
-        detSX += 0.5f0*vector[7] + 0.5f0*vecs[10]
-        detSY += 0.5f0*vecs[8] + 0.5f0*vecs[11]
-        detSZ += 0.5f0*vecs[9] + 0.5f0*vecs[12]   
+        if false
+            # translation for the non-center volume
+            dx = -(vol_geom.minX + vol_geom.maxX) / 2.f0;
+            dy = -(vol_geom.minX + vol_geom.maxX) / 2.f0;
+            dz = -(vol_geom.minX + vol_geom.maxX) / 2.f0;
+
+            detSX += dx; detSY += dy; detSZ += dz;
+        end
+
+        # detSX /= vol_geom.spacingX
+        # detSY /= vol_geom.spacingY
+        # detSZ /= vol_geom.spacingZ
+
+        detSX += 0.5f0*vector[7] + 0.5f0*vector[10]
+        detSY += 0.5f0*vector[8] + 0.5f0*vector[11]
+        detSZ += 0.5f0*vector[9] + 0.5f0*vector[12]   
     
         p_ = view(p, :, :, iangle)
         # compute_raydir
         if abs(vector[1]) >= abs(vector[2]) && abs(vector[1]) >= abs(vector[3])
             dir = 0
+            scale1 = (vol_geom.spacingY / vol_geom.spacingX)^2
+            scale2 = (vol_geom.spacingZ / vol_geom.spacingX)^2
         elseif abs(vector[2]) >= abs(vector[1]) && abs(vector[2]) >= abs(vector[3])
             dir = 1
+            scale1 = (vol_geom.spacingX / vol_geom.spacingY)^2
+            scale2 = (vol_geom.spacingZ / vol_geom.spacingY)^2
+            out_scale = vol_geom.spacingY
         else
-            dir = 2
+            # dir = 2
+            # scale1 = (vol_geom.spacingX / vol_geom.spacingZ)^2
+            # scale2 = (vol_geom.spacingY / vol_geom.spacingZ)^2
         end
+
+        vector = cu(vector)
 
         if dir == 0
             c0 = (x,y,z) -> x; c1 = (x,y,z) -> y; c2 = (x,y,z) -> z
-            # fx = c0; fy = c1; fz = c2;
-            @cuda threads=nthreads blocks=nblocks fp_parallel3d_kernel!(p_, img_texture, vector, iangle, nx, ny, nz, c0, c1, c2, detSX, detSY, detSZ, dir, scale)
+            @cuda threads=nthreads blocks=nblocks fp_parallel3d_kernel!(p_, img_texture, vector, iangle, nx, ny, nz, c0, c1, c2, detSX, detSY, detSZ, dir, scale1, scale2, out_scale)
         elseif dir == 1
             c0 = (x,y,z) -> y; c1 = (x,y,z) -> x; c2 = (x,y,z) -> z
-            @cuda threads=nthreads blocks=nblocks fp_parallel3d_kernel!(p_, img_texture, vector, iangle, ny, nx, nz, c0, c1, c2, detSX, detSY, detSZ, dir, scale)
+            @cuda threads=nthreads blocks=nblocks fp_parallel3d_kernel!(p_, img_texture, vector, iangle, ny, nx, nz, c0, c1, c2, detSX, detSY, detSZ, dir, scale1, scale2, out_scale)
         elseif dir == 2
-            c0 = (x,y,z) -> z; c1 = (x,y,z) -> x; c2 = (x,y,z) -> y
-            @cuda threads=nthreads blocks=nblocks fp_parallel3d_kernel!(p_, img_texture, vector, iangle, nz, nx, ny, c0, c1, c2, detSX, detSY, detSZ, dir, scale)
+            # c0 = (x,y,z) -> z; c1 = (x,y,z) -> x; c2 = (x,y,z) -> y
+            # @cuda threads=nthreads blocks=nblocks fp_parallel3d_kernel!(p_, img_texture, vector, iangle, nz, nx, ny, c0, c1, c2, detSX, detSY, detSZ, dir, scale1, scale2, out_scale)
         end
     end
 end
