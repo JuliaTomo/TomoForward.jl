@@ -50,7 +50,7 @@ img ::Array{AbstractFloat,1} vectorized image
 """
 function fp_op_parallel2d_line(proj_geom, H, W, minX, maxX, minY, maxY)
     # Partially ported from ASTRA-Toolbox
-    # https://github.com/astra-toolbox/astra-toolbox/blob/master/include/astra/ParallelBeamLinearKernelProjector2D.inl
+    # https://github.com/astra-toolbox/astra-toolbox/blob/master/include/astra/ParallelBeamLineKernelProjector2D.inl
 
     nangles = size(proj_geom.Vectors, 1)
     detcount = proj_geom.DetectorColCount

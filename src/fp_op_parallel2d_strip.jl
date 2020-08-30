@@ -54,19 +54,6 @@ function fp_op_parallel2d_strip(proj_geom, H, W, minX, maxX, minY, maxY)
     nangles = size(proj_geom.Vectors, 1)
     detcount = proj_geom.DetectorColCount
     
-    on_the_fly = false
-    p = 0
-    
-    img = 0
-    if img != 0
-        on_the_fly = true
-        p = zeros(nangles*detcount)
-    end
-    
-#     if get_p
-#         p = zeros(nangles, detcount)
-#     end
-    
     pixelspacingX = (maxX-minX) / W
     pixelspacingY = (maxY-minY) / H
     
@@ -79,6 +66,7 @@ function fp_op_parallel2d_strip(proj_geom, H, W, minX, maxX, minY, maxY)
     Ey = maxY - pixelspacingY*0.5 # max y
 
     A = SP(nangles*detcount, H*W)
+    # p = zeros(nangles*detcount)
 
     # for each angle
     for i in 1:nangles
@@ -161,11 +149,11 @@ function fp_op_parallel2d_strip(proj_geom, H, W, minX, maxX, minY, maxY)
                             weight -= 0.5*(offsetL+T)*(offsetL+T)*invTS
                         end
                         
-                        if on_the_fly == false
+                        # if on_the_fly == false
                             add_weight(A, iray, ivol, weight)
-                        else
-                            p[iray] += img[ivol] * weight
-                        end
+                        # else
+                            # p[iray] += img[ivol] * weight
+                        # end
                         offsetL -= 1.0
                         offsetR -= 1.0
                     end
@@ -226,11 +214,11 @@ function fp_op_parallel2d_strip(proj_geom, H, W, minX, maxX, minY, maxY)
                             weight -= 0.5*(offsetL+T)^2*invTS
                         end
                         
-                        if on_the_fly == false
+                        # if on_the_fly == false
                             add_weight(A, iray, ivol, weight)
-                        else
-                            p[iray] += img[ivol] * weight
-                        end
+                        # else
+                            # p[iray] += img[ivol] * weight
+                        # end
                         
                         offsetL -= 1.0
                         offsetR -= 1.0
@@ -243,11 +231,7 @@ function fp_op_parallel2d_strip(proj_geom, H, W, minX, maxX, minY, maxY)
         end
     end
     
-    if on_the_fly == false
-        A = sparse(A.I, A.J, A.V, A.nrows, A.ncols)
-        dropzeros!(A)
-        return A
-    else
-        return p
-    end
+    A = sparse(A.I, A.J, A.V, A.nrows, A.ncols)
+    dropzeros!(A)
+    return A
 end
