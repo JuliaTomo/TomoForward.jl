@@ -83,7 +83,7 @@ function fp_op_parallel2d_strip(proj_geom, H, W, minX, maxX, minY, maxY)
         Dx0 = -rx * src_origin - vector[5] * detcount / 2.
         Dy0 = -ry * src_origin - vector[6] * detcount / 2.
 
-        raywidth = abs(vector[5]*ry - vector[6]*proj->fRayX) / sqrt(rx*rx+ry*ry)
+        raywidth = abs(vector[5]*ry - vector[6]*rx) / sqrt(rx*rx+ry*ry)
         rel_pixel_area = pixel_area / raywidth
         
         # for each ray
