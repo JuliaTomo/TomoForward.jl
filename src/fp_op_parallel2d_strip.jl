@@ -13,7 +13,7 @@ function fp_op_parallel2d_strip(proj_geom, H, W)
 end
 
 function fp_op_parallel2d_strip(proj_geom, vol_geom)
-    fp_op_parallel2d_strip(proj_geom, vol_geom, vol_geom, vol_geom, vol_geom, vol_geom, vol_geom)
+    fp_op_parallel2d_strip(proj_geom, vol_geom.ny, vol_geom.nx, vol_geom.minX, vol_geom.maxX, vol_geom.minY, vol_geom.maxY)
 end
 
 
