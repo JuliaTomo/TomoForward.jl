@@ -18,7 +18,7 @@ end
 
 
 # The following code was ported to Julia from
-# https://github.com/astra-toolbox/astra-toolbox/blob/master/include/astra/ParallelBeamLinearKernelProjector2D.inl
+# https://github.com/astra-toolbox/astra-toolbox/blob/master/include/astra/ParallelBeamStripKernelProjector2D.inl
 # /*
 # -----------------------------------------------------------------------
 # Copyright: 2010-2018, imec Vision Lab, University of Antwerp
@@ -68,6 +68,8 @@ function fp_op_parallel2d_strip(proj_geom, H, W, minX, maxX, minY, maxY)
     A = SP(nangles*detcount, H*W)
     # p = zeros(nangles*detcount)
 
+    pixel_area = pixelspacingX * pixelspacingY
+
     # for each angle
     for i in 1:nangles
         vector = proj_geom.Vectors[i,:]
@@ -80,6 +82,9 @@ function fp_op_parallel2d_strip(proj_geom, H, W, minX, maxX, minY, maxY)
 
         Dx0 = -rx * src_origin - vector[5] * detcount / 2.
         Dy0 = -ry * src_origin - vector[6] * detcount / 2.
+
+        raywidth = abs(vector[5]*ry - vector[6]*proj->fRayX) / sqrt(rx*rx+ry*ry)
+        rel_pixel_area = pixel_area / raywidth
         
         # for each ray
         for j = 1:detcount
@@ -91,7 +96,7 @@ function fp_op_parallel2d_strip(proj_geom, H, W, minX, maxX, minY, maxY)
             DRy = DLy + vector[6]
             
             isin = false
-
+            
             if (vertical)
                 rxry = rx / ry
                 Δc = - pixelspacingY * rxry * invpixelspacingX
@@ -150,7 +155,7 @@ function fp_op_parallel2d_strip(proj_geom, H, W, minX, maxX, minY, maxY)
                         end
                         
                         # if on_the_fly == false
-                            add_weight(A, iray, ivol, weight)
+                            add_weight(A, iray, ivol, weight*rel_pixel_area)
                         # else
                             # p[iray] += img[ivol] * weight
                         # end
@@ -215,7 +220,7 @@ function fp_op_parallel2d_strip(proj_geom, H, W, minX, maxX, minY, maxY)
                         end
                         
                         # if on_the_fly == false
-                            add_weight(A, iray, ivol, weight)
+                            add_weight(A, iray, ivol, weight*rel_pixel_area)
                         # else
                             # p[iray] += img[ivol] * weight
                         # end
