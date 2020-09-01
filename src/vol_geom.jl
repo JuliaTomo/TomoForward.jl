@@ -67,8 +67,8 @@ end
 function VolGeom(nx::Int, ny::Int, minX, maxX, minY, maxY)
     spacingX = (maxX - minX) / nx
     spacingY = (maxY - minY) / ny
-    spacingZ = 0f0
-    return VolGeom(nx, ny, 0, minX, maxX, minY, maxY, 0f0, 0f0, spacingX, spacingY, spacingZ)
+    spacingZ = typeof(minX)(0)
+    return VolGeom(nx, ny, 0, minX, maxX, minY, maxY, typeof(minX)(0), typeof(minX)(0), spacingX, spacingY, spacingZ)
 end
 
 "2D VolGeom with 1:nx, 1:ny"

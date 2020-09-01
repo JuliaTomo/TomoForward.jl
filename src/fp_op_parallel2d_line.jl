@@ -68,8 +68,7 @@ function fp_op_parallel2d_line(proj_geom, H, W, minX, maxX, minY, maxY)
 
     
     A = SP(nangles*detcount, H*W)
-    p = zeros(nangles*detcount)
-
+    
     # for each angle
     for i in 1:nangles
         vector = proj_geom.Vectors[i,:]
