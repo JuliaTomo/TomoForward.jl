@@ -84,7 +84,7 @@ end
 function VolGeom(proj_geom)
     n = max(proj_geom.DetectorColCount, proj_geom.DetectorRowCount)
     half_x_width = proj_geom.DetectorColCount * proj_geom.DetectorSpacingX * 0.5
-    if proj_geom.DetectorRowCount == 0
+    if proj_geom.DetectorRowCount <= 1
         # 2D
         vol_geom = VolGeom(n, n, -half_x_width, half_x_width, -half_x_width, half_x_width)
     else
