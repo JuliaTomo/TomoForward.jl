@@ -2,18 +2,18 @@ using SparseArrays
 
 using .fp_op_common
 
-function fp_op_parallel2d_line(proj_geom, H, W)
+function fp_op_parallel2d_line(proj_geom::ProjGeom, H, W, mask=nothing)
     minX = -W // 2
     maxX = +W // 2
     minY = -H // 2
     maxY = +H // 2
     
     check_vol_geom(proj_geom, maxX-minX )
-    fp_op_parallel2d_line(proj_geom, H, W, minX, maxX, minY, maxY)
+    fp_op_parallel2d_line(proj_geom, H, W, minX, maxX, minY, maxY, mask)
 end
 
-function fp_op_parallel2d_line(proj_geom, vol_geom)
-    fp_op_parallel2d_line(proj_geom, vol_geom.ny, vol_geom.nx, vol_geom.minX, vol_geom.maxX, vol_geom.minY, vol_geom.maxY)
+function fp_op_parallel2d_line(proj_geom::ProjGeom, vol_geom::VolGeom, mask=nothing)
+    fp_op_parallel2d_line(proj_geom, vol_geom.ny, vol_geom.nx, vol_geom.minX, vol_geom.maxX, vol_geom.minY, vol_geom.maxY, mask)
 end
 
 
@@ -48,7 +48,7 @@ for the image size of [H x W]
 # optional arguments
 img ::Array{AbstractFloat,1} vectorized image
 """
-function fp_op_parallel2d_line(proj_geom, H, W, minX, maxX, minY, maxY)
+function fp_op_parallel2d_line(proj_geom::ProjGeom, H, W, minX, maxX, minY, maxY, mask=nothing)
     # Partially ported from ASTRA-Toolbox
     # https://github.com/astra-toolbox/astra-toolbox/blob/master/include/astra/ParallelBeamLineKernelProjector2D.inl
 
@@ -84,8 +84,16 @@ function fp_op_parallel2d_line(proj_geom, H, W, minX, maxX, minY, maxY)
         
         # for each ray
         for j = 1:detcount
+            if ~isnothing(mask)
+                # (for sinogram inpainting)
+                # if a mask is given, check if the pixel is not considered
+                if mask[i,j] == 1
+                    continue
+                end
+            end
+
             iray = (j-1)*nangles + i
-            
+
             Dx = Dx0 + (j-0.5) * vector[5]
             Dy = Dy0 + (j-0.5) * vector[6]
 
