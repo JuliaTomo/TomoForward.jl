@@ -71,6 +71,7 @@ function fp_op_parallel2d_line(proj_geom::ProjGeom, H, W, minX, maxX, minY, maxY
         A = SP(nangles*detcount, H*W)
     else
         A = SP(nangles*detcount-sum(mask_exclude), H*W)
+        cnt = 0
     end
     
     # for each angle
@@ -88,15 +89,17 @@ function fp_op_parallel2d_line(proj_geom::ProjGeom, H, W, minX, maxX, minY, maxY
         
         # for each ray
         for j = 1:detcount
-            if ~isnothing(mask_exclude)
+            if isnothing(mask_exlucde)
+                iray = (j-1)*nangles + i
+            else
                 # (for sinogram inpainting)
                 # if a mask_exclude is given, check if the pixel is not considered
                 if mask_exclude[i,j] == 1
                     continue
                 end
+                cnt += 1
+                iray = cnt
             end
-
-            iray = (j-1)*nangles + i
 
             Dx = Dx0 + (j-0.5) * vector[5]
             Dy = Dy0 + (j-0.5) * vector[6]
