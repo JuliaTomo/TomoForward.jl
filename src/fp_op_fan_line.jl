@@ -77,7 +77,7 @@ function fp_op_fan_line(proj_geom::ProjGeom, H, W, minX, maxX, minY, maxY, mask=
             if ~isnothing(mask)
                 # (for sinogram inpainting)
                 # if a mask is given, check if the pixel is not considered
-                if mask[i,j] == 1
+                if mask[i,j] > 0 # if corrupted, skip
                     continue
                 end
             end
