@@ -2,18 +2,18 @@ using SparseArrays
 
 using .fp_op_common
 
-function fp_op_parallel2d_strip(proj_geom, H, W, mask=nothing)
+function fp_op_parallel2d_strip(proj_geom, H, W, mask_exclude=nothing)
     minX = -W // 2
     maxX = +W // 2
     minY = -H // 2
     maxY = +H // 2
     
     check_vol_geom(proj_geom, maxX-minX )
-    fp_op_parallel2d_strip(proj_geom, H, W, minX, maxX, minY, maxY, mask)
+    fp_op_parallel2d_strip(proj_geom, H, W, minX, maxX, minY, maxY, mask_exclude)
 end
 
-function fp_op_parallel2d_strip(proj_geom::ProjGeom, vol_geom::VolGeom, mask=nothing)
-    fp_op_parallel2d_strip(proj_geom, vol_geom.ny, vol_geom.nx, vol_geom.minX, vol_geom.maxX, vol_geom.minY, vol_geom.maxY, mask)
+function fp_op_parallel2d_strip(proj_geom::ProjGeom, vol_geom::VolGeom, mask_exclude=nothing)
+    fp_op_parallel2d_strip(proj_geom, vol_geom.ny, vol_geom.nx, vol_geom.minX, vol_geom.maxX, vol_geom.minY, vol_geom.maxY, mask_exclude)
 end
 
 
@@ -49,7 +49,7 @@ for the image size of [H x W]
 img ::Array{AbstractFloat,1} vectorized image
 
 """
-function fp_op_parallel2d_strip(proj_geom::ProjGeom, H, W, minX, maxX, minY, maxY, mask=nothing)
+function fp_op_parallel2d_strip(proj_geom::ProjGeom, H, W, minX, maxX, minY, maxY, mask_exclude=nothing)
 
     nangles = size(proj_geom.Vectors, 1)
     detcount = proj_geom.DetectorColCount
@@ -65,9 +65,12 @@ function fp_op_parallel2d_strip(proj_geom::ProjGeom, H, W, minX, maxX, minY, max
     Ex = minX + pixelspacingX*0.5 # min x
     Ey = maxY - pixelspacingY*0.5 # max y
 
-    A = SP(nangles*detcount, H*W)
-    # p = zeros(nangles*detcount)
-
+    if isnothing(mask_exclude)
+        A = SP(nangles*detcount, H*W)
+    else
+        A = SP(nangles*detcount-sum(mask_exclude), H*W)
+    end
+    
     pixel_area = pixelspacingX * pixelspacingY
 
     # for each angle
@@ -88,10 +91,10 @@ function fp_op_parallel2d_strip(proj_geom::ProjGeom, H, W, minX, maxX, minY, max
         
         # for each ray
         for j = 1:detcount
-            if ~isnothing(mask)
+            if ~isnothing(mask_exclude)
                 # (for sinogram inpainting)
-                # if a mask is given, check if the pixel is not considered
-                if mask[i,j] > 0
+                # if a mask_exclude is given, check if the pixel is not considered
+                if mask_exclude[i,j] == 1
                     continue
                 end
             end

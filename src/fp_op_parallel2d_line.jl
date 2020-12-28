@@ -2,18 +2,18 @@ using SparseArrays
 
 using .fp_op_common
 
-function fp_op_parallel2d_line(proj_geom::ProjGeom, H, W, mask=nothing)
+function fp_op_parallel2d_line(proj_geom::ProjGeom, H, W, mask_exclude=nothing)
     minX = -W // 2
     maxX = +W // 2
     minY = -H // 2
     maxY = +H // 2
     
     check_vol_geom(proj_geom, maxX-minX )
-    fp_op_parallel2d_line(proj_geom, H, W, minX, maxX, minY, maxY, mask)
+    fp_op_parallel2d_line(proj_geom, H, W, minX, maxX, minY, maxY, mask_exclude)
 end
 
-function fp_op_parallel2d_line(proj_geom::ProjGeom, vol_geom::VolGeom, mask=nothing)
-    fp_op_parallel2d_line(proj_geom, vol_geom.ny, vol_geom.nx, vol_geom.minX, vol_geom.maxX, vol_geom.minY, vol_geom.maxY, mask)
+function fp_op_parallel2d_line(proj_geom::ProjGeom, vol_geom::VolGeom, mask_exclude=nothing)
+    fp_op_parallel2d_line(proj_geom, vol_geom.ny, vol_geom.nx, vol_geom.minX, vol_geom.maxX, vol_geom.minY, vol_geom.maxY, mask_exclude)
 end
 
 
@@ -48,7 +48,7 @@ for the image size of [H x W]
 # optional arguments
 img ::Array{AbstractFloat,1} vectorized image
 """
-function fp_op_parallel2d_line(proj_geom::ProjGeom, H, W, minX, maxX, minY, maxY, mask=nothing)
+function fp_op_parallel2d_line(proj_geom::ProjGeom, H, W, minX, maxX, minY, maxY, mask_exclude=nothing)
     # Partially ported from ASTRA-Toolbox
     # https://github.com/astra-toolbox/astra-toolbox/blob/master/include/astra/ParallelBeamLineKernelProjector2D.inl
 
@@ -67,7 +67,11 @@ function fp_op_parallel2d_line(proj_geom::ProjGeom, H, W, minX, maxX, minY, maxY
     Ey = maxY - pixelspacingY*0.5 # max y
 
     
-    A = SP(nangles*detcount, H*W)
+    if isnothing(mask_exclude)
+        A = SP(nangles*detcount, H*W)
+    else
+        A = SP(nangles*detcount-sum(mask_exclude), H*W)
+    end
     
     # for each angle
     for i in 1:nangles
@@ -84,10 +88,10 @@ function fp_op_parallel2d_line(proj_geom::ProjGeom, H, W, minX, maxX, minY, maxY
         
         # for each ray
         for j = 1:detcount
-            if ~isnothing(mask)
+            if ~isnothing(mask_exclude)
                 # (for sinogram inpainting)
-                # if a mask is given, check if the pixel is not considered
-                if mask[i,j] > 0
+                # if a mask_exclude is given, check if the pixel is not considered
+                if mask_exclude[i,j] == 1
                     continue
                 end
             end
