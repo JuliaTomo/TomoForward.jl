@@ -1,0 +1,37 @@
+##
+# Host Database
+#
+# localhost is used to configure the loopback interface
+# when the system is booting.  Do not change this entry.
+##
+127.0.0.1	localhost
+255.255.255.255	broadcasthost
+::1             localhost
+
+#127.0.0.1 www.linkedin.com linkedin.com
+#127.0.0.1 reddit.com old.reddit.com www.reddit.com
+#127.0.0.1 news.daum.net	www.daum.net daum.net *.daum.net  news.naver.com m.naver.com n.news.naver.com *.naver.com naver.com www.naver.com
+127.0.0.1 www.chosun.com
+
+#127.0.0.1 www.youtube.com youtube.com *.youtube.com
+
+
+
+
+
+
+
+
+
+
+
+
+
+127.0.0.1 *.pornhub.com www.pornhub.com 
+127.0.0.1 *.xvideos.com redgifs.com www.redgifs.com www.xvideos.com
+127.0.0.1 *.redtube.com xfantazy.com freeones.com spankbang.com *.xnxx.com *.xhamster.com
+127.0.0.1 *.youporn.com www.youporn.com youporn.com
+# Added by Docker Desktop
+# To allow the same kube context to work on the host and the container:
+127.0.0.1 kubernetes.docker.internal
+# End of section
