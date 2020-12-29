@@ -65,11 +65,7 @@ function fp_op_parallel2d_strip(proj_geom::ProjGeom, H, W, minX, maxX, minY, max
     Ex = minX + pixelspacingX*0.5 # min x
     Ey = maxY - pixelspacingY*0.5 # max y
 
-    if isnothing(mask_exclude)
-        A = SP(nangles*detcount, H*W)
-    else
-        A = SP(nangles*detcount-sum(mask_exclude), H*W)
-    end
+    A = SP(nangles*detcount, H*W)
     
     pixel_area = pixelspacingX * pixelspacingY
 

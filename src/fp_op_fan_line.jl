@@ -63,12 +63,8 @@ function fp_op_fan_line(proj_geom::ProjGeom, H, W, minX, maxX, minY, maxY, mask_
     Ex = minX + pixelspacingX*0.5 # min x
     Ey = maxY - pixelspacingY*0.5 # max y
 
-    if isnothing(mask_exclude)
-        A = SP(nangles*detcount, H*W)
-    else
-        A = SP(nangles*detcount-sum(mask_exclude), H*W)
-    end
-
+    A = SP(nangles*detcount, H*W)
+    
     # for each angle
     for i in 1:nangles
         vector = proj_geom.Vectors[i,:]
